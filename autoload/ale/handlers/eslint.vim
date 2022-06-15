@@ -52,7 +52,17 @@ function! ale#handlers#eslint#GetCwd(buffer) abort
     let l:executable = ale#path#FindNearestExecutable(a:buffer, s:executables)
 
     if !empty(l:executable)
-        let l:modules_index = strridx(l:executable, 'node_modules')
+
+        let pnpmIndex = strridx(l:executable, '.pnpm')
+        if pnpmIndex > -1
+            " fix path like ./node_modules/.pnpm/eslint@7.32.0/node_modules/eslint/bin/eslint.js
+            " in pnpm,  node_modules/eslint -> ./node_modules/.pnpm/eslint@7.32.0/node_modules/eslint
+            let l:executableWithoutPnpm = strpart(l:executable, 0, pnpmIndex)
+            let l:modules_index = strridx(l:executableWithoutPnpm, 'node_modules')
+        else
+            let l:modules_index = strridx(l:executable, 'node_modules')
+        endif
+
         let l:modules_root = l:modules_index > -1 ? l:executable[0:l:modules_index - 2] : ''
 
         let l:sdks_index = strridx(l:executable, ale#path#Simplify('.yarn/sdks'))
