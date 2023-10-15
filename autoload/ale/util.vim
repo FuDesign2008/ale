@@ -420,7 +420,7 @@ function! ale#util#FuzzyJSONDecode(data, default) abort
         endif
 
         return l:result
-    catch /E474\|E491/
+    catch /E474\|E491\|E488/
         return a:default
     endtry
 endfunction
